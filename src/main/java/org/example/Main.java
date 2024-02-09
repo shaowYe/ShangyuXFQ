@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
 
@@ -18,10 +20,9 @@ public class Main {
 
     private static final String loginUrl = "http://www.ishangyu.net/yx/h5/app2.0/data/login.php";
 
-    private static final String recordUrl = "http://www.ishangyu.net/yx/h5/app2.0/xfq/my_record.php";
-
     private static final String xfqUrl = "http://www.ishangyu.net/yx/h5/app2.0/xfq2024/ajax.php";
 
+    private static final String recordUrl = "http://www.ishangyu.net/yx/h5/app2.0/xfq/my_record.php";
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -32,18 +33,41 @@ public class Main {
                 System.out.println("获取 cookie 失败啦");
                 continue;
             }
-            while (true) {
-                //todo 这里改成并发
-                System.out.println("开始获取 抢~~~~ cookie:" + cookie);
-                boolean xfq = xfq(cookie);
-                if (xfq) {
-                    System.exit(1);
-                }
+            System.out.println("开始获取 抢~~~~ cookie:" + cookie);
+            ExecutorService executor = Executors.newFixedThreadPool(20); // 并发调用 20 次，根据需要设置线程池大小
+            for (int i = 0; i < 20; i++) {
+                executor.execute(() -> {
+                    while (true) {
+                        try {
+                            boolean xfq = xfq(cookie);
+                            if (xfq) {
+                                System.exit(0);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
-//            Thread.sleep(100);
         }
 
 
+    }
+
+
+    public static class Action implements Runnable {
+
+        public Action(String cookie) {
+            this.cookie = cookie;
+        }
+
+
+        private String cookie;
+
+        @Override
+        public void run() {
+            System.out.println(cookie);
+        }
     }
 
 
