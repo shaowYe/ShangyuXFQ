@@ -2,15 +2,20 @@ package org.example;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONPObject;
 import okhttp3.*;
-import okhttp3.internal.http2.Header;
 
 import java.io.IOException;
 
 public class Main {
+
+
+    private static final String xfq20 = "266";
+    private static final String xfq50 = "269";
+    private static final String xfq100 = "272";
+
     private static final String accountId = "65163191ce20a304691e73a4";
     private static final String sessionId = "65c1a19e7dee053d969742d1";
+
     private static final String loginUrl = "http://www.ishangyu.net/yx/h5/app2.0/data/login.php";
 
     private static final String recordUrl = "http://www.ishangyu.net/yx/h5/app2.0/xfq/my_record.php";
@@ -27,15 +32,15 @@ public class Main {
                 System.out.println("获取 cookie 失败啦");
                 continue;
             }
-            for (int i = 0; i < 10; i++) {
+            while (true) {
+                //todo 这里改成并发
                 System.out.println("开始获取 抢~~~~ cookie:" + cookie);
                 boolean xfq = xfq(cookie);
                 if (xfq) {
                     System.exit(1);
                 }
-//
             }
-            Thread.sleep(100);
+//            Thread.sleep(100);
         }
 
 
@@ -43,9 +48,7 @@ public class Main {
 
 
     public static boolean xfq(String cookie) {
-        String xfq20 = "265";
-        String xfq50 = "268";
-        String xfq100 = "271";
+
         OkHttpClient client = new OkHttpClient();
         Headers headers = new Headers.Builder()
                 .add("Host", "www.ishangyu.net")
@@ -94,10 +97,10 @@ public class Main {
                 // 处理错误
                 System.out.println("请求失败: " + response.code() + " " + response.message());
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
 
@@ -123,11 +126,10 @@ public class Main {
                 .add("Accept", "application/json, text/javascript, */*; q=0.01")
                 .add("Origin", "http://www.ishangyu.net")
                 .add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;;xsb;xsb_shangyu;2.1.6;Appstore;native_app")
-                .add("Referer", "http://www.ishangyu.net/yx/h5/app2.0/xfq/form.html")
+                .add("Referer", "http://www.ishangyu.net/yx/h5/app2.0/xfq2024/")
                 .add("Cookie", cookie)
                 .add("Connection", "keep-alive")
                 .build();
-
         Request recordRequest = new Request.Builder()
                 .url(recordUrl)
                 .headers(headers)
