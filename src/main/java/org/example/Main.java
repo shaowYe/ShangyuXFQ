@@ -15,8 +15,19 @@ public class Main {
     private static final String xfq50 = "269";
     private static final String xfq100 = "272";
 
+
+    //ysw
     private static final String accountId = "65163191ce20a304691e73a4";
     private static final String sessionId = "65c1a19e7dee053d969742d1";
+
+
+
+    //llq
+    //    private static final String accountId = "65c45beedc0c8f04ee764a34";
+    //    private static final String sessionId = "65c45beedc0c8f04ee764a35";
+
+
+
 
     private static final String loginUrl = "http://www.ishangyu.net/yx/h5/app2.0/data/login.php";
 
@@ -33,13 +44,48 @@ public class Main {
                 System.out.println("获取 cookie 失败啦");
                 continue;
             }
-            System.out.println("开始获取 抢~~~~ cookie:" + cookie);
-            ExecutorService executor = Executors.newFixedThreadPool(20); // 并发调用 20 次，根据需要设置线程池大小
+            System.out.println("开始获取 抢100~~~~ cookie:" + cookie);
+            ExecutorService executor100 = Executors.newFixedThreadPool(50); // 并发调用 20 次，根据需要设置线程池大小
             for (int i = 0; i < 20; i++) {
-                executor.execute(() -> {
+                executor100.execute(() -> {
                     while (true) {
                         try {
-                            boolean xfq = xfq(cookie);
+                            boolean xfq = xfq(cookie,xfq100);
+                            if (xfq) {
+                                System.exit(0);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            System.out.println("开始获取 抢50~~~~ cookie:" + cookie);
+            ExecutorService executor50 = Executors.newFixedThreadPool(50); // 并发调用 20 次，根据需要设置线程池大小
+            for (int i = 0; i < 20; i++) {
+                executor50.execute(() -> {
+                    while (true) {
+                        try {
+                            boolean xfq = mockXfq(cookie,xfq50);
+                            if (xfq) {
+                                System.exit(0);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+
+            System.out.println("开始获取 抢20~~~~ cookie:" + cookie);
+            ExecutorService executor20 = Executors.newFixedThreadPool(50); // 并发调用 20 次，根据需要设置线程池大小
+            for (int i = 0; i < 20; i++) {
+                executor20.execute(() -> {
+                    while (true) {
+                        try {
+                            boolean xfq = mockXfq(cookie,xfq20);
                             if (xfq) {
                                 System.exit(0);
                             }
@@ -71,7 +117,12 @@ public class Main {
     }
 
 
-    public static boolean xfq(String cookie) {
+    public static boolean mockXfq(String cookie, String xfq){
+        System.out.println("mock xfq:"+xfq);
+        return false;
+    }
+
+    public static boolean xfq(String cookie, String xfq) {
 
         OkHttpClient client = new OkHttpClient();
         Headers headers = new Headers.Builder()
@@ -89,7 +140,7 @@ public class Main {
 
 
         RequestBody formBody = new FormBody.Builder()
-                .add("a", xfq100)
+                .add("a", xfq)
                 .build();
 
         Request recordRequest = new Request.Builder()
